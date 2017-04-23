@@ -1,6 +1,7 @@
 .earthquake {
   stroke: #333;
   opacity: 0.75;
+  stroke-width: 0.5;
 }
 
 .legend-mag-text {

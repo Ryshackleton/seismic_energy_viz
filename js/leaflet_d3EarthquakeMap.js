@@ -182,6 +182,7 @@ LEAFLET_CUSTOM.d3EarthquakeMap = function(options) {
                         return d.y; })
           .attr("r", 0)
           .on("mouseover", function(d) {		
+              d3.select(this).style('stroke-width',2);
               popupDiv.transition()		
                   .duration(200)		
                   .style("opacity", .9);		
@@ -195,22 +196,14 @@ LEAFLET_CUSTOM.d3EarthquakeMap = function(options) {
                        .style("top", (d.y-10) + "px");	
               })					
           .on("mouseout", function(d) {		
+              d3.select(this).style('stroke-width',0.5);
               popupDiv.transition()		
                   .duration(500)		
                   .style("opacity", 0);
               })
           .transition()
           .on("end", function(d) {
-              bubble.addEarthquakeBubble({
-                id: d.id,
-                time: d.properties.time,
-                depth: +d.geometry.coordinates[2],
-                magnitude: +d.properties.mag,
-                radius: d.properties.mag,
-                name: d.properties.place,
-                x: 0,
-                y: 0 
-              });
+              bubble.addEarthquakeBubble(d);
           })
           .duration(1000)
           .delay(function(d,i){ return 200*i; })

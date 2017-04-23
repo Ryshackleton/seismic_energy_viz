@@ -31,10 +31,16 @@ FORCE.earthquakeBubble = function(options) {
  
     , bubbles = null
     , nodes = []
+    , popupDiv // div to attach a popup to display earthquake info
   ;
   
   var chart = function chart() {
   };
+  
+  popupDiv = d3.select("#"+divTag)
+          .append("div")
+          .attr("class","tooltip .leaflet-popup-pane")
+          .style("opacity", 0 );
   
   updateWidthHeight();
 
@@ -115,7 +121,18 @@ FORCE.earthquakeBubble = function(options) {
       return earthquakeRadiusScale(magToEnergy(mag));
   }
   
-  chart.addEarthquakeBubble = function(newbub) {
+  chart.addEarthquakeBubble = function(d) {
+      var newbub = {
+                id: d.id,
+                url: d.properties.url,
+                time: d.properties.time,
+                depth: +d.geometry.coordinates[2],
+                magnitude: +d.properties.mag,
+                radius: d.properties.mag,
+                place: d.properties.place,
+                x: 0,
+                y: 0 
+      }
   
       if( newbub.magnitude > maxEarthquakeMagnitude )
       {
@@ -144,9 +161,37 @@ FORCE.earthquakeBubble = function(options) {
             return k;
         }) ;
       
-      bubblesE.append('circle')
-                .attr('class','bubble-circle')
-                .attr('fill', function (d) { return eqColorScale(d.magnitude); })
+      var svgrect = svg.node().getBBox();
+      bubblesE
+          // append an <a> to provide a link upon click to the USGS url
+          .append("a")
+          // add the usgs link as an attribute
+          .attr("xlink:href", function(d) { return d.url; })
+          // open link in new window
+          .attr("target","_blank")
+          .append('circle')
+          .attr('class','bubble-circle')
+          .attr('fill', function (d) { return eqColorScale(d.magnitude); })
+          .on("mouseover", function(d) {		
+              d3.select(this).style('stroke-width',2);
+              popupDiv.transition()		
+                  .duration(200)		
+                  .style("opacity", .9);		
+              var date = new Date(d.time);
+              var placeSplit = d.place.split(" of ");
+              popupDiv.html("Magnitude: <strong>" + d.magnitude + "</strong><br/>"
+                        + placeSplit.join(" of <br/>") 
+                        + "<br/>(click for info)" )	
+                       .style("overflow","hidden")
+                       .style("left", (d.x*0.5) + "px")
+                       .style("top", (svgrect.y+d.y) + "px");	
+              })					
+          .on("mouseout", function(d) {		
+              d3.select(this).style('stroke-width',0.5);
+              popupDiv.transition()		
+                  .duration(500)		
+                  .style("opacity", 0);
+              })
         ;
         
      bubblesE.append("text")
@@ -190,6 +235,7 @@ FORCE.earthquakeBubble = function(options) {
   
       // update bubble size 
       bubbles
+        .select("a")
         .select("circle")
         .transition()
         .duration(defaultDuration)
