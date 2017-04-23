@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta charset="utf-8">
+		<title>Earthquake Visualizations</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+      
+      	<!-- bootstrap & custom bootstrap template stylesheet -->
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<link href="css/styles.css" rel="stylesheet">
+      
+      	<!-- leaflet stylesheet -->
+   		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+
+      	<!-- earthquake map stylesheet -->
+		<link href="css/leaflet_d3EarthquakeMap.css" rel="stylesheet">
+      
+	</head>
+	<body>
+
+<!-- bootstrap template -->
+<div class="navbar navbar-custom navbar-fixed-top">
+ <div class="navbar-header" ><a class="navbar-brand" id="events-title">Current Visualization</a>
+<!--
+      <a class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+    </div>
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Home</a></li>
+        <li><a href="#">Link</a></li>
+        <li>&nbsp;</li>
+      </ul>
+-->
+    </div>
+</div>
+
+
+<!-- div to contain the leaflet map -->
+<div id="map-canvas"></div>
+<!-- div to contain the force layout -->
+<div id="force-canvas" class="panel-heading">
+    <h3>Seismic Energy Release</h3>
+    <h6>Each bubble below represents the seismic energy release for 1 earthquake in the map. The bubbles are <strong>labeled by earthquake magnitude</strong>, but are dynamically scaled relative to the <strong> earthquake with the largest seismic energy release</strong>.</h6>
+<!--    <h6>The moment magnitude scale is logarithmic, <a href="https://earthquake.usgs.gov/learn/topics/measure.php" target="_blank">so for every 1 unit increase in magnitude, seismic energy increases by approximately 32 times</a>.</h6>-->
+    <h6>This visualization was inspired by <a href="https://www.facebook.com/GreatShakeOut/videos/10154330904266759/" target="_blank">this video</a>. Follow the links in the video to learn more about the <a href="https://earthquake.usgs.gov/learn/topics/measure.php" target="_blank">moment magnitude scale.</a></h6>
+</div>
+
+<!-- sidebar -->
+<div class="container-fluid" id="main">
+  <div class="row">
+  	<div class="col-xs-2" id="left">
+    
+      <h3>Earthquake Sequences</h3>
+      <h6>Click the links below to explore past and present earthquakes.</h6>
+      
+      <!-- item list (built by index.js with the views and earthquake sequences) -->
+      <div id=earthquake-view-list></div>
+      
+      <!-- /item list -->
+      <p>
+      <a href="https://github.com/Ryshackleton/global_daily_earthquakes_d3_leaflet">Source Code</a>
+      </p>
+      
+      <hr> 
+        
+      <p>
+      <a href="https://github.com/Ryshackleton/" target="_ext" class="center-block btn btn-primary">Author Profile</a>
+      </p>
+        
+      <hr>      
+
+    </div>
+    <div class="col-xs-4"><!--map-canvas will be postioned here--></div>
+    <div class="col-xs-4"></div>
+    
+    
+  </div>
+</div>
+      
+<!-- end template -->
+
+	<!-- script references -->
+    <!-- UI - bootstrap and jQuery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+      
+    <!-- D3.js version 4, and topojson for earthquake parsing/rendering -->
+    <script src="https://d3js.org/d3.v4.min.js"></script> 
+    <script src="https://d3js.org/topojson.v1.min.js"></script>
+    
+      <!-- leaflet js script to build the slippy map -->
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+
+    <!-- main script to load this page and build the map and earthquake views -->
+    <script src="js/index.js"></script>
+    <script src="js/leaflet_custom.js"></script>
+    <script src="js/leaflet_d3EarthquakeMap.js"></script>
+    <script src="js/usgsQuery.js"></script>
+    <script src="js/quakeViewList.js"></script>
+    <script src="js/force.js"></script>
+      
+      
+
+	</body>
+</html>

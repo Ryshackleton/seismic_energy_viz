@@ -1,0 +1,43 @@
+.earthquake {
+  stroke: #333;
+  opacity: 0.75;
+}
+
+.legend-mag-text {
+  font-size: 9px;
+  fill: black;
+  font-weight: bold;
+}
+
+.legend-box {
+  stroke-width: 2px;
+  stroke: rgb(154, 151, 151);;
+  fill: white;
+  rx: 5;
+  ry: 5; 
+}
+
+svg {
+  position: relative;
+/* un-comment the selector below to see the borders of the svg overlays */
+/* border: 1px dotted black; */
+}
+
+/* tooltip style grabbed from leaflet.css:  .leaflet-tooltip style for consistency */
+div.tooltip {	
+	position: absolute;
+    text-align: center;			
+	padding: 6px;
+	background-color: #fff;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	color: #222;
+	white-space: nowrap;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	pointer-events: none;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
