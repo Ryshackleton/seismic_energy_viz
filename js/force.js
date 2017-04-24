@@ -37,13 +37,32 @@ FORCE.earthquakeBubble = function(options) {
   var chart = function chart() {
   };
   
+  chart.updateWidthHeight = function() {
+    var bbox = d3.select("#"+divTag).node().getBoundingClientRect();
+    
+    if( d3.select("#"+divTag) === undefined ) {
+      width = 200;
+      height = 200;
+    }
+    else {
+      width = 0.9 * d3.select("#"+divTag).node().getBoundingClientRect().width;
+      height = d3.select("#"+divTag).node().getBoundingClientRect().height; 
+    }
+    center = { x: width / 2, y: height / 3 };
+    
+    svg.attr("width", width)
+       .attr("height", height);
+       
+    updateRadiusScale(maxEarthquakeMagnitude);
+  }
+  
+  chart.updateWidthHeight();
+
   popupDiv = d3.select("#"+divTag)
           .append("div")
           .attr("class","tooltip .leaflet-popup-pane")
           .style("opacity", 0 );
   
-  updateWidthHeight();
-
   // Charge function that is called for each node.
   // As part of the ManyBody force.
   // This is what creates the repulsion between nodes.
@@ -80,32 +99,13 @@ FORCE.earthquakeBubble = function(options) {
       var largerDim = width > height ? width : height;
       earthquakeRadiusScale = d3.scaleLinear()
                                 .domain([-1, magToEnergy(newMax)])
-                                .range([0.5, largerDim * 0.15 ]);
+                                .range([0.5, largerDim * 0.13 ]);
                                     
       maxEarthquakeMagnitude = newMax;
       center = { x: width / 2, y: height / 3 };
 
       nodes.forEach(function(d){ d.radius = magToRadius(d.magnitude); });
     
-  }
-  
-  function updateWidthHeight() {
-    var bbox = d3.select("#"+divTag).node().getBoundingClientRect();
-    
-    if( d3.select("#"+divTag) === undefined ) {
-      width = 200;
-      height = 200;
-    }
-    else {
-      width = d3.select("#"+divTag).node().getBoundingClientRect().width;
-      height = d3.select("#"+divTag).node().getBoundingClientRect().height; 
-    }
-    center = { x: width / 2, y: height / 3 };
-    
-    svg.attr("width", width)
-       .attr("height", height);
-       
-    updateRadiusScale(maxEarthquakeMagnitude);
   }
    
   // converts an earthquake magnitude to energy in joules
@@ -120,7 +120,7 @@ FORCE.earthquakeBubble = function(options) {
   function magToRadius(mag) {
       return earthquakeRadiusScale(magToEnergy(mag));
   }
-  
+   
   chart.addEarthquakeBubble = function(d) {
       var newbub = {
                 id: d.id,

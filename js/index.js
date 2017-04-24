@@ -54,5 +54,10 @@ window.onload = function() {
       d3.select("#"+v.divId).on('click')();
     }
   });
+  
+  window.onresize = function(){
+                          eqMap();
+                          eqMap.bubbleLayout().updateWidthHeight();
+                    }
 };
 

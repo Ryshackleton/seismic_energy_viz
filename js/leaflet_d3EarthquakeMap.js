@@ -43,6 +43,14 @@ LEAFLET_CUSTOM.d3EarthquakeMap = function(options) {
     
     return map;
   };
+  
+  map.bubbleLayout = function(d) {
+    if( !arguments.length ) return bubble;
+
+    bubble = value;
+    return map;
+  
+  }
  
   // private
   function init() {
