@@ -16,11 +16,10 @@ FORCE.earthquakeBubble = function(options) {
     // color scale from: http://colorbrewer2.org/?type=sequential&scheme=OrRd&n=9
     , eqDomain = [0, 1, 2, 3, 4, 5, 6, 7, 9 ]
     , eqTimeScale
+    , eqDepthScale
     , simulation // the main force simulation
     // @v4 strength to apply to the position forces
     , forceStrength = 0.03
-    , strongForce = forceStrength * 5
-
     , svg = d3.select("#"+divTag).insert("svg",":first-child")
     , bubbles = null
     , nodes = []
@@ -50,6 +49,50 @@ FORCE.earthquakeBubble = function(options) {
        
     updateRadiusScale(maxEarthquakeMagnitude);
     chart.updateTimeScale();
+    chart.updateDepthScale();
+  }
+  
+  chart.updateDepthScale = function() {
+      var min = d3.min(nodes, function(d){return d.depth; });
+      var max = d3.max(nodes,function(d){ return d.depth; });
+      if( min === undefined || max === undefined )
+          return chart;
+    
+      var scaleHeight = (height - yTarget) * 2;
+      var halfHeight = scaleHeight * 0.5;
+      var bottomPad = halfHeight * 0.1;
+      var depthAxisTop = yTarget - halfHeight - bottomPad;
+      var depthAxisBottom = yTarget + halfHeight - bottomPad;
+      
+      eqDepthScale = d3.scaleLinear()
+                       .domain( [min , max])
+                       .range([ depthAxisTop, depthAxisBottom]);
+      
+      var leftAxis = width * 0.125;
+      var fontsize = width * 0.10; // percent
+      svg.selectAll(".depth-scale").remove();
+      
+      depthScaleG = svg.append("g")
+                    .attr("class","depth-scale");
+                    
+        // Add the y Axis
+      depthScaleG.append("g")
+          .attr('class','depth-scale-labels')
+          .style('font-size',fontsize+'%')
+          .call(d3.axisLeft(eqDepthScale).ticks(5,'s').tickFormat(function(d){return d+" km";}))
+          .attr("transform",
+                  "translate(" + leftAxis + "," + 0 + ")");
+          
+      // text label for the y axis
+      depthScaleG.append("text")
+          .attr('class','depth-scale-labels')
+          .style('font-size',fontsize+'%')
+          .attr("transform", "translate("+(leftAxis - fontsize / 5 )+","+(depthAxisTop - fontsize / 4) +")")
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .text("Depth"); 
+      
+      return chart;
   }
   
   chart.updateTimeScale = function() {
@@ -62,7 +105,7 @@ FORCE.earthquakeBubble = function(options) {
       function addTimeLabel(label,x,y) {
           svg.append("text")
                   .attr('class','date-labels')
-                  .style("font-size", width * 0.13  + "%" )
+                  .style("font-size", width * 0.11  + "%" )
                   .attr("transform","translate("+x+","+y+")")
                   .text(label);
       }
@@ -70,13 +113,13 @@ FORCE.earthquakeBubble = function(options) {
       var maxD = new Date(max);
       svg.selectAll(".date-labels").remove();
       
-      var leftP = width*0.05;
+      var leftP = width*0.04;
       addTimeLabel("Oldest",leftP,yTarget-30);
       if( minD.toLocaleDateString() !== "Invalid Date") {
           addTimeLabel(minD.toLocaleDateString(),leftP,yTarget-10);
           addTimeLabel(minD.toLocaleTimeString(),leftP,yTarget+10);
       }
-      var rightP = width*0.95;
+      var rightP = width*0.96;
       addTimeLabel("Youngest",rightP,yTarget-30);
       if( maxD.toLocaleDateString() !== "Invalid Date") {
           addTimeLabel(maxD.toLocaleDateString(),rightP,yTarget-10);
@@ -101,12 +144,13 @@ FORCE.earthquakeBubble = function(options) {
   // @v4 Before the charge was a stand-alone attribute
   //  of the force layout. Now we can use it as a separate force!
   function charge(d) {
-    return -Math.pow(d.radius, 2) * forceStrength; 
+    return -Math.pow(d.radius, 2) * forceStrength / 2; 
   }
   
   // offset y target by 1/2 the radius to allow larger circles to be higher
   function radiusOffsetY(d) {
-      return yTarget - d.radius * 0.25;
+//      return yTarget - d.radius * 0.25;
+      return eqDepthScale(d.depth);
   }
   
   function timeSort(d) {
@@ -126,7 +170,7 @@ FORCE.earthquakeBubble = function(options) {
       //  add forces to it.
       simulation = d3.forceSimulation()
         .velocityDecay(0.7)
-        .force('y', d3.forceY().strength(forceStrength*2).y(radiusOffsetY))
+        .force('y', d3.forceY().strength(forceStrength*5).y(radiusOffsetY))
         .force('charge', d3.forceManyBody().strength(charge))
         .force('timealign', d3.forceX().strength(forceStrength*3).x(timeSort))
         .on('tick', ticked);
@@ -189,6 +233,7 @@ FORCE.earthquakeBubble = function(options) {
       
       // Bind nodes data to what will become DOM elements to represent them.
       chart.updateTimeScale();
+      chart.updateDepthScale();
       bubbles = svg.selectAll('.bubble')
         .data(nodes,function(d){return d.id; });
         
@@ -219,13 +264,16 @@ FORCE.earthquakeBubble = function(options) {
               var date = new Date(d.time);
               var placeSplit = d.place.split(" of ");
               var date = new Date(d.time);
-              popupDiv.html("Magnitude: <strong>" + d.magnitude + "</strong><br/>"
+              popupDiv.html("<strong>M" + d.magnitude + "</strong> at <strong>"
+                        + Math.round(d.depth) + "km </strong> depth<br/>"
                         + placeSplit.join(" of <br/>") 
-                        + "<br/>" + date.toLocaleDateString()+"<br/>"
-                        + "(click for info)" )
+                        + "<br/>" + date.toLocaleDateString()+ " "
+                        + date.toLocaleTimeString() 
+//                        + "(click for info)"
+                        )
                        .style("overflow","hidden")
                        .style("left", (d.x+5) + "px")
-                       .style("top", (d.y-5) + "px");	
+                       .style("top", (d.y-50) + "px");	
               d3.select(this.parentNode)
                  .append("line")
                  .attr("class","bubble-connector-line")

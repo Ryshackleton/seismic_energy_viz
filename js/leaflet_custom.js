@@ -7,7 +7,7 @@ LEAFLET_CUSTOM.map = function(options) {
     // CREATE THE LEAFLET MAP
     , mapCenter = options.mapCenter === undefined ? [47.598877, -122.330916] : options.mapCenter
     , mapZoomLevel = options.mapZoomLevel === undefined ? 5 : options.mapZoomLevel
-    , leafletmap = new L.map(mapDivTag, { minZoom: 2, maxZoom: 11 }) 
+    , leafletmap = new L.map(mapDivTag, { minZoom: 1, maxZoom: 11 }) 
                     .setView(mapCenter,mapZoomLevel)
     , timeOut = null // timeout to prevent the map from updating on repeated resize events
     // create an empty layer control that we'll add components to

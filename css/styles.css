@@ -82,9 +82,6 @@ body{
 #force-layout > svg {
     z-index: 399;
     pointer-events: none; /* don't block pointer events for all layers below */
-    border: black;
-    border-style: dotted;
-    border-width: 0.5px;
 }
 
 .bubble-circle {
@@ -114,6 +111,9 @@ body{
 .date-labels {
     text-anchor: middle;
     fill: black;
+}
+
+.depth-scale-labels {
 }
 
 /*
