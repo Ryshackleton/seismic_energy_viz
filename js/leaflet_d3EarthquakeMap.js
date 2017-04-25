@@ -24,7 +24,7 @@ LEAFLET_CUSTOM.d3EarthquakeMap = function(options) {
     , eqSizeScale = d3.scaleLinear()
                       .domain(eqDomain)
                       .range([1,1,1.5,3,4.5,6,7.5,9,13.5])
-    , bubble = FORCE.earthquakeBubble({ divTag: "force-canvas"})
+    , bubble// = FORCE.earthquakeBubble({ divTag: "map-canvas"})
     ;
   // build the map
   init();
@@ -70,22 +70,22 @@ LEAFLET_CUSTOM.d3EarthquakeMap = function(options) {
        this.stream.point(point.x, point.y);
     }
     
-    
-//    bubble.leafletmap(map.leafletmap());
-    
     // APPEND the SVG to the Leaflet map pane
     svg = d3.select(map.leafletmap().getPanes().overlayPane).append("svg")
-            .attr("class", "leaflet-zoom-hide");
+            .attr("class", "leaflet-zoom-hide")
+            .attr("id","mapped-quakes");
+  
     // g (group) element will be inside the svg, and will contain the earthquakes
-    svg.append("g")
-       .attr("class", "leaflet-zoom-hide");
+    svg.append("g");
 
     popupDiv = d3.selectAll(".leaflet-pane")
               .filter(".leaflet-popup-pane")
               .append("div")
               .attr("class","tooltip")
               .style("opacity", 0 );
-
+    
+    addBubbleLayout();
+    
     // add a magnitude legend to the bottom right control layer
     addMagnitudeLegend();
 
@@ -114,13 +114,16 @@ LEAFLET_CUSTOM.d3EarthquakeMap = function(options) {
       var exit = svg.select("g")
         .selectAll("#earthquake-a").remove();
         
-      bubble.clearNodes();
+      if( bubble !== undefined )
+          bubble.clearNodes();
   }
 
   function renderEarthquakes() {
     // because we're doing a time series, we must remove all of the existing
     // earthquakes in order for the time sequence to be valid
     removeEarthquakeCircles();
+    if( bubble !== undefined )
+        bubble.updateWidthHeight();
     
     // DRAW EARTHQUAKES 
    // build a query using the usgsQuery module
@@ -163,6 +166,8 @@ LEAFLET_CUSTOM.d3EarthquakeMap = function(options) {
         .attr("height", bottomRight[1] - topLeft[1] )
         .style("left", topLeft[0] + "px")
         .style("top", topLeft[1] + "px");
+        
+      var canvasRect = d3.select("#map-canvas").node().getBoundingClientRect();
       
       // add the new earthquake series
       svg.select("g")
@@ -210,8 +215,16 @@ LEAFLET_CUSTOM.d3EarthquakeMap = function(options) {
                   .style("opacity", 0);
               })
           .transition()
-          .on("end", function(d) {
-              bubble.addEarthquakeBubble(d);
+          .on("start", function(d) {
+              var cR = d3.select(this).node().getBoundingClientRect();
+              var x = cR.left - canvasRect.left;
+              var y = cR.top - canvasRect.top;
+              d.fill = eqColorScale(+d.properties.mag);
+              d.startX = x;
+              d.startY = y;
+              d.startRadius = eqSizeScale(+d.properties.mag); 
+              if( bubble !== undefined )
+                  bubble.addEarthquakeBubble(d);
           })
           .duration(1000)
           .delay(function(d,i){ return 200*i; })
@@ -239,7 +252,7 @@ LEAFLET_CUSTOM.d3EarthquakeMap = function(options) {
     });
     
     // some sizing and location info (in px)
-    var lNodeSize = 40;
+    var lNodeSize = 30;
     var lPadding = 5;
     var legendWidth = (legendObjs.length * (lNodeSize + 1));
     var legendHeight = lNodeSize * 1.5;
@@ -251,9 +264,9 @@ LEAFLET_CUSTOM.d3EarthquakeMap = function(options) {
     // within that control container, which has class=leaflet-bottom leaflet-left
     var lSvg = d3.select(".leaflet-control-container")
                     // selects "leaflet-bottom leaflet-left" AND "leaflet-bottom leaflet-right"
-                    .selectAll(".leaflet-bottom")
+                    .selectAll(".leaflet-top")
                     // filter the selection by ONLY the leaflet-left
-                    .filter(".leaflet-left")
+                    .filter(".leaflet-right")
                     // add an svg to the bottom left control element
                     .append("svg")
                   // size the element width to the size of the earthquake legend
@@ -287,7 +300,7 @@ LEAFLET_CUSTOM.d3EarthquakeMap = function(options) {
           .style("fill", function(d){ return eqColorScale(d.mag); })
           .attr("transform", function(d, i) {
                                  d.x = lTopLeft[0] + (2 * lNodeSize / 3 + lNodeSize * i);
-                                 d.y = lBottomRight[1] - lNodeSize / 2 + lPadding;
+                                 d.y = lBottomRight[1] - lNodeSize / 2 + lPadding + 3;
                                  return "translate("
                                           + d.x + ","+ d.y 
                                           + ")";
@@ -305,6 +318,20 @@ LEAFLET_CUSTOM.d3EarthquakeMap = function(options) {
                                   return "translate("
                                      + d.x + ","
                                      + (d.y-15) + ")"; });
+  }
+  
+  function addBubbleLayout() {
+  
+    // use d3 to select the appropriate div element on the control layer
+    var bSvg = d3.select(".leaflet-control-container")
+                    .insert("div",":first-child")
+                    .attr("id","force-layout")
+                    .attr("class","leaflet-top leaflet-left")
+                    ;
+  
+    var leaf = map.leafletmap();
+    
+    bubble = FORCE.earthquakeBubble({ divTag: "force-layout", divSizeTag: "map-canvas" })
   }
   
   return map;

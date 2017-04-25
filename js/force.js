@@ -5,30 +5,23 @@ var FORCE = FORCE || {};
 */
 FORCE.earthquakeBubble = function(options) {
   var divTag = options.divTag === undefined ? 'chart' : options.divTag
+    , divSizeTag = options.divSizeTag === undefined ? options.divTag : options.divSizeTag
     , width  = null
     , height = null
-    , center = { x: 0, y: 0 }
-    , defaultDuration = 75 
+    , yTarget = 0 
+    , defaultDuration = 250 
     , maxEarthquakeMagnitude = 9.5 
-    , earthquakeRadiusScale = d3.scaleLinear()
-                                .domain([-1, magToEnergy(maxEarthquakeMagnitude)])
-                                .range([0.5, width ])
+    , earthquakeRadiusScale 
     // color scale for the earthquakes
     // color scale from: http://colorbrewer2.org/?type=sequential&scheme=OrRd&n=9
-    , eqDomain = [-1, 0, 1, 2, 3, 4, 5, 6, 9.5 ]
-    , eqColorScale = d3.scaleLinear()
-                         .domain(eqDomain)
-                         .range(['#fff7ec','#fee8c8',
-                               '#fdd49e','#fdbb84',
-                               '#fc8d59','#ef6548',
-                                 '#d7301f','#b30000','#7f0000'
-                                ])                                
-  
+    , eqDomain = [0, 1, 2, 3, 4, 5, 6, 7, 9 ]
+    , eqTimeScale
+    , simulation // the main force simulation
     // @v4 strength to apply to the position forces
     , forceStrength = 0.03
+    , strongForce = forceStrength * 5
 
-    , svg = d3.select("#"+divTag).append('svg')
- 
+    , svg = d3.select("#"+divTag).insert("svg",":first-child")
     , bubbles = null
     , nodes = []
     , popupDiv // div to attach a popup to display earthquake info
@@ -38,31 +31,61 @@ FORCE.earthquakeBubble = function(options) {
   };
   
   chart.updateWidthHeight = function() {
-    var bbox = d3.select("#"+divTag).node().getBoundingClientRect();
+    var bbox = d3.select("#"+divSizeTag).node().getBoundingClientRect();
     
-    if( d3.select("#"+divTag) === undefined ) {
+    if( d3.select("#"+divSizeTag) === undefined ) {
       width = 200;
       height = 200;
     }
     else {
-      width = 0.9 * d3.select("#"+divTag).node().getBoundingClientRect().width;
-      height = d3.select("#"+divTag).node().getBoundingClientRect().height; 
+      width = d3.select("#"+divSizeTag).node().getBoundingClientRect().width;
+      height = d3.select("#"+divSizeTag).node().getBoundingClientRect().height; 
     }
-    center = { x: width / 2, y: height / 3 };
+    
+    yTarget = 0.9 * height;
     
     svg.attr("width", width)
-       .attr("height", height);
+       .attr("height", height)
+       ;
        
     updateRadiusScale(maxEarthquakeMagnitude);
+    chart.updateTimeScale();
   }
   
-  chart.updateWidthHeight();
-
-  popupDiv = d3.select("#"+divTag)
-          .append("div")
-          .attr("class","tooltip .leaflet-popup-pane")
-          .style("opacity", 0 );
-  
+  chart.updateTimeScale = function() {
+      var min = d3.min(nodes, function(d){return d.time; });
+      var max = d3.max(nodes,function(d){ return d.time; });
+    
+      eqTimeScale = d3.scaleLinear()
+                       .domain( [min , max])
+                       .range([width*0.15,width*0.85]);
+      function addTimeLabel(label,x,y) {
+          svg.append("text")
+                  .attr('class','date-labels')
+                  .style("font-size", width * 0.13  + "%" )
+                  .attr("transform","translate("+x+","+y+")")
+                  .text(label);
+      }
+      var minD = new Date(min);
+      var maxD = new Date(max);
+      svg.selectAll(".date-labels").remove();
+      
+      var leftP = width*0.05;
+      addTimeLabel("Oldest",leftP,yTarget-30);
+      if( minD.toLocaleDateString() !== "Invalid Date") {
+          addTimeLabel(minD.toLocaleDateString(),leftP,yTarget-10);
+          addTimeLabel(minD.toLocaleTimeString(),leftP,yTarget+10);
+      }
+      var rightP = width*0.95;
+      addTimeLabel("Youngest",rightP,yTarget-30);
+      if( maxD.toLocaleDateString() !== "Invalid Date") {
+          addTimeLabel(maxD.toLocaleDateString(),rightP,yTarget-10);
+          addTimeLabel(maxD.toLocaleTimeString(),rightP,yTarget+10);
+      }
+      
+      return chart;
+  }
+    
   // Charge function that is called for each node.
   // As part of the ManyBody force.
   // This is what creates the repulsion between nodes.
@@ -78,34 +101,52 @@ FORCE.earthquakeBubble = function(options) {
   // @v4 Before the charge was a stand-alone attribute
   //  of the force layout. Now we can use it as a separate force!
   function charge(d) {
-    return -Math.pow(d.radius, 2.0) * forceStrength;
+    return -Math.pow(d.radius, 2) * forceStrength; 
   }
-
-  // Here we create a force layout and
-  // @v4 We create a force simulation now and
-  //  add forces to it.
-  var simulation = d3.forceSimulation()
-    .velocityDecay(0.25)
-    .force('x', d3.forceX().strength(forceStrength).x(center.x))
-    .force('y', d3.forceY().strength(forceStrength).y(center.y))
-    .force('charge', d3.forceManyBody().strength(charge))
-    .on('tick', ticked);
-
-  // @v4 Force starts up automatically,
-  //  which we don't want as there aren't any nodes yet.
-  simulation.stop();
   
+  // offset y target by 1/2 the radius to allow larger circles to be higher
+  function radiusOffsetY(d) {
+      return yTarget - d.radius * 0.25;
+  }
+  
+  function timeSort(d) {
+      return eqTimeScale(d.time);
+  }
+  
+  function init() {
+      chart.updateWidthHeight();
+
+      popupDiv = d3.select("#"+divTag)
+                  .append("div")
+                  .attr("class","tooltip")
+                  .style("opacity", 0 );
+                  
+      // Here we create a force layout and
+      // @v4 We create a force simulation now and
+      //  add forces to it.
+      simulation = d3.forceSimulation()
+        .velocityDecay(0.7)
+        .force('y', d3.forceY().strength(forceStrength*2).y(radiusOffsetY))
+        .force('charge', d3.forceManyBody().strength(charge))
+        .force('timealign', d3.forceX().strength(forceStrength*3).x(timeSort))
+        .on('tick', ticked);
+
+      // @v4 Force starts up automatically,
+      //  which we don't want as there aren't any nodes yet.
+      simulation.stop();
+  
+  }
+  init();
+   
   function updateRadiusScale(newMax) {
       var largerDim = width > height ? width : height;
       earthquakeRadiusScale = d3.scaleLinear()
-                                .domain([-1, magToEnergy(newMax)])
-                                .range([0.5, largerDim * 0.13 ]);
+                                .domain([0, magToEnergy(newMax)])
+                                .range([1, largerDim * 0.13 ]);
                                     
       maxEarthquakeMagnitude = newMax;
-      center = { x: width / 2, y: height / 3 };
 
       nodes.forEach(function(d){ d.radius = magToRadius(d.magnitude); });
-    
   }
    
   // converts an earthquake magnitude to energy in joules
@@ -128,10 +169,12 @@ FORCE.earthquakeBubble = function(options) {
                 time: d.properties.time,
                 depth: +d.geometry.coordinates[2],
                 magnitude: +d.properties.mag,
-                radius: d.properties.mag,
+                radius: d.startRadius,
                 place: d.properties.place,
-                x: 0,
-                y: 0 
+                startX: d.startX,
+                startY: d.startY,
+                x: d.startX,
+                y: d.startY,
       }
   
       if( newbub.magnitude > maxEarthquakeMagnitude )
@@ -139,14 +182,15 @@ FORCE.earthquakeBubble = function(options) {
           maxEarthquakeMagnitude = newbub.magnitude;
           updateRadiusScale(newbub.magnitude);
       }
-      newbub.x = width / 2;
-      newbub.y = height / 10;
-      newbub.radius = magToRadius(newbub.magnitude);
+      nodes.push(newbub);
+      // keep array sorted by magnitude to ensure that big circles don't occlude smaller ones
+      nodes.sort(function(a,b){return b.magnitude - a.magnitude; });
+      
       
       // Bind nodes data to what will become DOM elements to represent them.
-      nodes.push(newbub);
+      chart.updateTimeScale();
       bubbles = svg.selectAll('.bubble')
-        .data(nodes);
+        .data(nodes,function(d){return d.id; });
         
       // Create new circle elements each with class `bubble`.
       // There will be one circle.bubble for each object in the nodes array.
@@ -155,13 +199,8 @@ FORCE.earthquakeBubble = function(options) {
       //  enter selection to apply our transtition to below.
       var bubblesE = bubbles.enter().append('g')
         .classed('bubble', true)
-        // start translated to the center
-        .attr("transform", function (d) {
-            var k = "translate(" + d.x + "," + d.y + ")";
-            return k;
-        }) ;
+        ;
       
-      var svgrect = svg.node().getBBox();
       bubblesE
           // append an <a> to provide a link upon click to the USGS url
           .append("a")
@@ -171,7 +210,7 @@ FORCE.earthquakeBubble = function(options) {
           .attr("target","_blank")
           .append('circle')
           .attr('class','bubble-circle')
-          .attr('fill', function (d) { return eqColorScale(d.magnitude); })
+          .attr('fill', d.fill )
           .on("mouseover", function(d) {		
               d3.select(this).style('stroke-width',2);
               popupDiv.transition()		
@@ -179,15 +218,27 @@ FORCE.earthquakeBubble = function(options) {
                   .style("opacity", .9);		
               var date = new Date(d.time);
               var placeSplit = d.place.split(" of ");
+              var date = new Date(d.time);
               popupDiv.html("Magnitude: <strong>" + d.magnitude + "</strong><br/>"
                         + placeSplit.join(" of <br/>") 
-                        + "<br/>(click for info)" )	
+                        + "<br/>" + date.toLocaleDateString()+"<br/>"
+                        + "(click for info)" )
                        .style("overflow","hidden")
-                       .style("left", (d.x*0.5) + "px")
-                       .style("top", (svgrect.y+d.y) + "px");	
+                       .style("left", (d.x+5) + "px")
+                       .style("top", (d.y-5) + "px");	
+              d3.select(this.parentNode)
+                 .append("line")
+                 .attr("class","bubble-connector-line")
+                 .attr("x1",d.startX-d.x)
+                 .attr("y1",d.startY-d.y)
+                 .attr("x2",0)
+                 .attr("y2",0);
               })					
           .on("mouseout", function(d) {		
               d3.select(this).style('stroke-width',0.5);
+              
+              d3.select(this.parentNode).selectAll("line").remove();
+              
               popupDiv.transition()		
                   .duration(500)		
                   .style("opacity", 0);
@@ -195,7 +246,10 @@ FORCE.earthquakeBubble = function(options) {
         ;
         
      bubblesE.append("text")
-              .attr('class','bubble-text');
+              .attr('class','bubble-text')
+              .style("font-size", "0px" )
+              .text("H")
+              .attr("dy", function(d) { return "." + Math.round(d.radius/3.5) + "em"; });
       ;
       
       // @v4 Merge the original empty selection and the enter selection
@@ -205,8 +259,7 @@ FORCE.earthquakeBubble = function(options) {
       // @v4 Once we set the nodes, the simulation will start running automatically!
       simulation.nodes(nodes);
       
-      // Set initial layout to single group.
-      groupBubbles();
+      simulation.alphaTarget(1).restart();
  
   }
   
@@ -232,6 +285,12 @@ FORCE.earthquakeBubble = function(options) {
   function ticked() {
       if( bubbles === null )
           return;
+          
+      bubbles
+        .select("a")
+        .select("line")
+        .attr("x1",function(d){return d.startX-d.x;})
+        .attr("y1",function(d){return d.startY-d.y;});
   
       // update bubble size 
       bubbles
@@ -239,13 +298,42 @@ FORCE.earthquakeBubble = function(options) {
         .select("circle")
         .transition()
         .duration(defaultDuration)
-        .attr('r', function (d) { return d.radius; });
+        .attr('r', function (d) {
+                d.radius = magToRadius(d.magnitude);
+                return d.radius;
+            });
         
+      // returns a nice magnitude string 4 or 4.6, not 4. , rounds up
+      function magSubString(d) {
+          var l = Math.floor(d.radius/2);
+          switch(l) {
+                case 0:
+                    return "";
+                    break;
+                case 1:
+                    return (""+d.magnitude).substring(0, l);
+                    break;
+                case 2:
+                    return Math.round(d.magnitude);
+                    break;
+                default:
+                    return (""+d.magnitude).substring(0, 3);
+            }
+      }
+      
+      // returns the correct font size based on radius
+      function fontSize(d) {
+          d.fontsize = Math.floor(d.radius/3);
+          return d.fontsize + "px";
+      }
+      
       // scale the text appropriately
       bubbles.select("text")
-        .style("font-size", function(d) { return Math.round(d.radius/2)+'px'; })
-        .text(function(d) { return (""+d.magnitude).substring(0, d.radius / 2); })
-        .attr("dy", function(d) { return "." + Math.round(d.radius/3) + "em"; });
+        .transition()
+        .duration(defaultDuration)
+        .style("font-size", fontSize)
+        .text(magSubString)
+        .attr("dy", function(d) { return d.fontsize / 2 + "px"; });
         
       // move the base "g" elements to the appropriate location based on force
       bubbles
@@ -253,14 +341,6 @@ FORCE.earthquakeBubble = function(options) {
             var k = "translate(" + d.x + "," + d.y + ")";
             return k;
         }) ;
-  }
-  
-  function groupBubbles() {
-    // @v4 Reset the 'x' force to draw the bubbles to the center.
-    simulation.force('x', d3.forceX().strength(forceStrength).x(center.x));
-
-    // @v4 We can reset the alpha value and restart the simulation
-    simulation.alphaTarget(1).restart();
   }
   
   return chart;

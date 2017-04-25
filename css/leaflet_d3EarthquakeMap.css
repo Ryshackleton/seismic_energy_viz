@@ -13,6 +13,7 @@
 .legend-box {
   stroke-width: 2px;
   stroke: rgb(154, 151, 151);;
+  stroke-opacity: 0.7;
   fill: white;
   rx: 5;
   ry: 5; 

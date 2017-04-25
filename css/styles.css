@@ -60,10 +60,10 @@ body{
 }
 
 #map-canvas {
-  width:52.666%;
+  width:83.3333%;
   height:calc(100% - 0);
   position:absolute;
-  right:30.666%;
+  right:0;
   top:50px;
   bottom:0;
   overflow:hidden;
@@ -79,12 +79,49 @@ body{
   overflow:hidden;
 }
 
+#force-layout > svg {
+    z-index: 399;
+    pointer-events: none; /* don't block pointer events for all layers below */
+    border: black;
+    border-style: dotted;
+    border-width: 0.5px;
+}
+
 .bubble-circle {
-    stroke: black;
-    stroke-width: 0.5;
+    z-index: 399;
+    /* ensure popup will work */
+    pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+    pointer-events: auto;
+    stroke: darkgray;
+    stroke-opacity: 0.9;
+    stroke-width: 1.5;
     opacity: 0.9;
 }
 
 .bubble-text {
     text-anchor: middle;
+    fill: black;
 }
+
+.bubble-connector-line {
+    stroke-dasharray: 3, 3;
+    stroke-linecap: round;
+    stroke-width: 2;
+    stroke: #414141;
+    stroke-opacity: 0.7;
+}
+
+.date-labels {
+    text-anchor: middle;
+    fill: black;
+}
+
+/*
+svg {
+    position: relative;
+    border: black;
+    border-style: dotted;
+    border-width: 0.5px;
+}
+*/
+
