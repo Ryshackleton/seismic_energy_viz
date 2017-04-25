@@ -41,7 +41,7 @@ window.onload = function() {
                 .on('click', function()
                       {
                         d3.select('#events-title')
-                            .text(v.params.label);
+                            .text("Seismic Energy Release for " + v.params.label);
       
                         eqMap.setEarthquakeQuery(v.params);
                         //bubble.setEarthquakeQuery(v.params);

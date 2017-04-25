@@ -20,14 +20,14 @@ var quakeViews = [
       divId: 'west-coast-two-week', 
       params: 
         {
-          label: "Earthquakes >M2 in the past 2 weeks",
+          label: "Earthquakes >M3 in the past 2 weeks",
           longlabel: "USGS Earthquake feed of earthquakes in the past 14 days (without explosions or quarry blasts).",
           center: [0, 20],
           zoom: 1.5,
           days: 14,
           date: undefined,
           eventType: "earthquake",
-          minmagnitude: 2.0 
+          minmagnitude: 3.0 
         }
     }
     ,
