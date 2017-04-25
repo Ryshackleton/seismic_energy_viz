@@ -112,6 +112,7 @@ body{
 }
 
 .date-labels {
+    text-anchor: middle;
     fill: black;
 }
 

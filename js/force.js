@@ -62,7 +62,7 @@ FORCE.earthquakeBubble = function(options) {
       function addTimeLabel(label,x,y) {
           svg.append("text")
                   .attr('class','date-labels')
-                  .style("font-size", "16px" )
+                  .style("font-size", width * 0.13  + "%" )
                   .attr("transform","translate("+x+","+y+")")
                   .text(label);
       }
@@ -70,15 +70,17 @@ FORCE.earthquakeBubble = function(options) {
       var maxD = new Date(max);
       svg.selectAll(".date-labels").remove();
       
-      addTimeLabel("Oldest",width*0.01,yTarget-30);
+      var leftP = width*0.05;
+      addTimeLabel("Oldest",leftP,yTarget-30);
       if( minD.toLocaleDateString() !== "Invalid Date") {
-          addTimeLabel(minD.toLocaleDateString(),width*0.01,yTarget-10);
-          addTimeLabel(minD.toLocaleTimeString(),width*0.01,yTarget+10);
+          addTimeLabel(minD.toLocaleDateString(),leftP,yTarget-10);
+          addTimeLabel(minD.toLocaleTimeString(),leftP,yTarget+10);
       }
-      addTimeLabel("Youngest",width*0.9,yTarget-30);
+      var rightP = width*0.95;
+      addTimeLabel("Youngest",rightP,yTarget-30);
       if( maxD.toLocaleDateString() !== "Invalid Date") {
-          addTimeLabel(maxD.toLocaleDateString(),width*0.9,yTarget-10);
-          addTimeLabel(maxD.toLocaleTimeString(),width*0.9,yTarget+10);
+          addTimeLabel(maxD.toLocaleDateString(),rightP,yTarget-10);
+          addTimeLabel(maxD.toLocaleTimeString(),rightP,yTarget+10);
       }
       
       return chart;
