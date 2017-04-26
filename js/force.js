@@ -203,7 +203,7 @@ FORCE.earthquakeBubble = function(options) {
       var largerDim = width > height ? width : height;
       earthquakeRadiusScale = d3.scaleLinear()
                                 .domain([0, magToEnergy(newMax)])
-                                .range([1, largerDim * 0.13 ]);
+                                .range([1, largerDim * 0.09 ]);
                                     
       maxEarthquakeMagnitude = newMax;
 
