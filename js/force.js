@@ -41,7 +41,7 @@ FORCE.earthquakeBubble = function(options) {
       height = d3.select("#"+divSizeTag).node().getBoundingClientRect().height; 
     }
     
-    yTarget = 0.9 * height;
+    yTarget = 0.85 * height;
     
     svg.attr("width", width)
        .attr("height", height)
@@ -58,17 +58,16 @@ FORCE.earthquakeBubble = function(options) {
       if( min === undefined || max === undefined )
           return chart;
     
-      var scaleHeight = (height - yTarget) * 2;
+      var baseAxis = height * 0.94;
+      var scaleHeight = (baseAxis - yTarget) * 2;
       var halfHeight = scaleHeight * 0.5;
-      var bottomPad = halfHeight * 0.1;
-      var depthAxisTop = yTarget - halfHeight - bottomPad;
-      var depthAxisBottom = yTarget + halfHeight - bottomPad;
+      var depthAxisTop = baseAxis - scaleHeight;
       
       eqDepthScale = d3.scaleLinear()
                        .domain( [min , max])
-                       .range([ depthAxisTop, depthAxisBottom]);
+                       .range([ depthAxisTop, baseAxis]);
       
-      var leftAxis = width * 0.125;
+      var leftAxis = width * 0.06;
       var fontsize = width * 0.10; // percent
       svg.selectAll(".depth-scale").remove();
       
@@ -101,31 +100,50 @@ FORCE.earthquakeBubble = function(options) {
     
       eqTimeScale = d3.scaleLinear()
                        .domain( [min , max])
-                       .range([width*0.15,width*0.85]);
-      function addTimeLabel(label,x,y) {
-          svg.append("text")
-                  .attr('class','date-labels')
-                  .style("font-size", width * 0.11  + "%" )
-                  .attr("transform","translate("+x+","+y+")")
-                  .text(label);
-      }
+                       .range([width*0.06,width*0.94]);
+                       
       var minD = new Date(min);
       var maxD = new Date(max);
+      if( minD.toLocaleDateString() === "Invalid Date"
+          || maxD.toLocaleDateString() === "Invalid Date" )
+          return chart;
+          
       svg.selectAll(".date-labels").remove();
       
-      var leftP = width*0.04;
-      addTimeLabel("Oldest",leftP,yTarget-30);
-      if( minD.toLocaleDateString() !== "Invalid Date") {
-          addTimeLabel(minD.toLocaleDateString(),leftP,yTarget-10);
-          addTimeLabel(minD.toLocaleTimeString(),leftP,yTarget+10);
-      }
-      var rightP = width*0.96;
-      addTimeLabel("Youngest",rightP,yTarget-30);
-      if( maxD.toLocaleDateString() !== "Invalid Date") {
-          addTimeLabel(maxD.toLocaleDateString(),rightP,yTarget-10);
-          addTimeLabel(maxD.toLocaleTimeString(),rightP,yTarget+10);
-      }
+      var leftP = width*0.06;
+      var rightP = width*0.92;
+          
+      svg.selectAll(".time-scale").remove();
       
+      var fontsize = width * 0.10; // percent
+      var baseAxis = height * 0.94;
+      timeScaleG = svg.append("g")
+                    .attr("class","time-scale");
+                    
+      // Add the y Axis
+      timeScaleG.append("g")
+          .attr('class','time-scale-labels')
+          .style('font-size',fontsize+'%')
+          .call(d3.axisBottom(eqTimeScale)
+                  .tickFormat(function(d){
+                      var D = new Date(d);
+                      return D.toLocaleDateString() + " " +
+                             D.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); 
+                  })
+                  .tickValues([min, (min+max)*0.5, max])
+               )
+          .attr("transform",
+                  "translate(" + 0 + "," + baseAxis + ")");
+          
+      // text label for the y axis
+      timeScaleG.append("text")
+          .attr('class','time-scale-labels')
+          .style('font-size',fontsize+'%')
+          .attr("transform", "translate("+( (width*0.06+width*0.94)*0.5 )+","+ (baseAxis+20) +")")
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .text("Time (approximate)"); 
+
       return chart;
   }
     
@@ -144,12 +162,11 @@ FORCE.earthquakeBubble = function(options) {
   // @v4 Before the charge was a stand-alone attribute
   //  of the force layout. Now we can use it as a separate force!
   function charge(d) {
-    return -Math.pow(d.radius, 2) * forceStrength / 2; 
+      return -Math.pow(d.radius, 2) * forceStrength * 0.5;
   }
   
   // offset y target by 1/2 the radius to allow larger circles to be higher
-  function radiusOffsetY(d) {
-//      return yTarget - d.radius * 0.25;
+  function depthOffsetY(d) {
       return eqDepthScale(d.depth);
   }
   
@@ -170,9 +187,9 @@ FORCE.earthquakeBubble = function(options) {
       //  add forces to it.
       simulation = d3.forceSimulation()
         .velocityDecay(0.7)
-        .force('y', d3.forceY().strength(forceStrength*5).y(radiusOffsetY))
+        .force('y', d3.forceY().strength(forceStrength*5).y(depthOffsetY))
         .force('charge', d3.forceManyBody().strength(charge))
-        .force('timealign', d3.forceX().strength(forceStrength*3).x(timeSort))
+        .force('timealign', d3.forceX().strength(forceStrength*5).x(timeSort))
         .on('tick', ticked);
 
       // @v4 Force starts up automatically,
@@ -269,7 +286,6 @@ FORCE.earthquakeBubble = function(options) {
                         + placeSplit.join(" of <br/>") 
                         + "<br/>" + date.toLocaleDateString()+ " "
                         + date.toLocaleTimeString() 
-//                        + "(click for info)"
                         )
                        .style("overflow","hidden")
                        .style("left", (d.x+5) + "px")
