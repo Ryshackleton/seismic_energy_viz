@@ -322,16 +322,8 @@ LEAFLET_CUSTOM.d3EarthquakeMap = function(options) {
   
   function addBubbleLayout() {
   
-    // use d3 to select the appropriate div element on the control layer
-    var bSvg = d3.select(".leaflet-control-container")
-                    .insert("div",":first-child")
-                    .attr("id","force-layout")
-                    .attr("class","leaflet-top leaflet-left")
-                    ;
-  
-    var leaf = map.leafletmap();
+    bubble = FORCE.earthquakeBubble({ divTag: "force-canvas", divSizeTag: "map-canvas" })
     
-    bubble = FORCE.earthquakeBubble({ divTag: "force-layout", divSizeTag: "map-canvas" })
   }
   
   return map;

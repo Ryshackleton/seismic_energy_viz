@@ -100,7 +100,7 @@ FORCE.earthquakeBubble = function(options) {
     
       eqTimeScale = d3.scaleLinear()
                        .domain( [min , max])
-                       .range([width*0.06,width*0.94]);
+                       .range([width*0.06,width*0.93]);
                        
       var minD = new Date(min);
       var maxD = new Date(max);
@@ -111,7 +111,7 @@ FORCE.earthquakeBubble = function(options) {
       svg.selectAll(".date-labels").remove();
       
       var leftP = width*0.06;
-      var rightP = width*0.92;
+      var rightP = width*0.93;
           
       svg.selectAll(".time-scale").remove();
       

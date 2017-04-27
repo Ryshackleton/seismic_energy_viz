@@ -59,29 +59,24 @@ body{
 	height:100%;
 }
 
-#map-canvas {
+#map-canvas, #force-canvas {
   width:83.3333%;
   height:calc(100% - 0);
   position:absolute;
   right:0;
   top:50px;
-  bottom:0;
+  bottom:5px;
   overflow:hidden;
+  z-index: 1;
+}
+
+#leaflet-map {
+   height: 70%;
 }
 
 #force-canvas {
-  width:30.666%;
-  height:calc(100% - 0);
-  position:absolute;
-  right:0px;
-  top:50px;
-  bottom:0;
-  overflow:hidden;
-}
-
-#force-layout > svg {
-    z-index: 399;
-    pointer-events: none; /* don't block pointer events for all layers below */
+  z-index: 3;
+  pointer-events: none; /* don't block pointer events for all layers below */
 }
 
 .bubble-circle {
@@ -111,9 +106,6 @@ body{
 .date-labels {
     text-anchor: middle;
     fill: black;
-}
-
-.depth-scale-labels {
 }
 
 /*

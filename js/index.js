@@ -1,7 +1,7 @@
 window.onload = function() {
   // build the quake map!
   var options = {
-    mapDivTag: 'map-canvas',
+    mapDivTag: 'leaflet-map',
   };
 
   var eqMap = new LEAFLET_CUSTOM.d3EarthquakeMap(options)

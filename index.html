@@ -21,37 +21,14 @@
 
 <!-- bootstrap template -->
 <div class="navbar navbar-custom navbar-fixed-top">
- <div class="navbar-header" ><a class="navbar-brand" id="events-title">Current Visualization</a>
-<!--
-      <a class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </a>
-    </div>
-    <div class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Home</a></li>
-        <li><a href="#">Link</a></li>
-        <li>&nbsp;</li>
-      </ul>
--->
-    </div>
+ <div class="navbar-header" ><a class="navbar-brand" id="events-title">Current Visualization</a></div>
 </div>
 
 
 <!-- div to contain the leaflet map -->
-<div id="map-canvas"></div>
+<div id="map-canvas"><div id="leaflet-map"></div></div>
 <!-- div to contain the force layout -->
-<!--
-<div id="force-canvas" class="panel-heading">
-    <h4>Seismic Energy Release</h4>
-    <div class="hidden-xs">
-        <h6>Each bubble below represents the seismic energy release for 1 earthquake in the map. The bubbles are <strong>labeled by earthquake magnitude</strong>, but are dynamically scaled relative to the <strong> earthquake with the largest seismic energy release</strong>.</h6>
-    <h6>This visualization was inspired by <a href="https://www.facebook.com/GreatShakeOut/videos/10154330904266759/" target="_blank">this video</a>. Follow the links in the video to learn more about the <a href="https://earthquake.usgs.gov/learn/topics/measure.php" target="_blank">moment magnitude scale.</a></h6>
-    </div>
-</div>
--->
+<div id="force-canvas"></div>
 
 <!-- sidebar -->
 <div class="container-fluid" id="main">
