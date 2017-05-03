@@ -5,86 +5,88 @@
 		<meta charset="utf-8">
 		<title>Seismic Energy Visualization</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-      
-      	<!-- bootstrap & custom bootstrap template stylesheet -->
-		<link href="css/bootstrap.min.css" rel="stylesheet">
-		<link href="css/styles.css" rel="stylesheet">
-      
+
+        <!-- bootstrap & custom bootstrap template stylesheet -->
+        <link href="lib/css/bootstrap.min.css" rel="stylesheet">
+        <link href="lib/css/bootstrap-slider.min.css" rel="stylesheet">
+        <link href="lib/css/bootstrap-tour.min.css" rel="stylesheet">
+        <link href="dist/css/bootstrap-custom-styles.css" rel="stylesheet">
+
       	<!-- leaflet stylesheet -->
    		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
 
-      	<!-- earthquake map stylesheet -->
-		<link href="css/leaflet_d3EarthquakeMap.css" rel="stylesheet">
-      
+        <!-- earthquake map stylesheet -->
+        <link href="dist/css/BasemapWithEarthquakes.css" rel="stylesheet">
+
+
 	</head>
 	<body>
+        <!-- bootstrap template -->
+        <div class="navbar navbar-custom navbar-fixed-top">
+            <div class="navbar-header" ><a class="navbar-brand" id="events-title">Current Visualization</a></div>
+        </div>
 
-<!-- bootstrap template -->
-<div class="navbar navbar-custom navbar-fixed-top">
- <div class="navbar-header" ><a class="navbar-brand" id="events-title">Current Visualization</a></div>
-</div>
+
+        <!-- div to contain the leaflet map -->
+        <div id="map-canvas"><div id="leaflet-map"></div></div>
+        <!-- div to contain the force layout -->
+        <div id="force-canvas"></div>
+
+        <!-- sidebar -->
+        <div class="container-fluid" id="main">
+            <div class="row">
+                <div class="col-xs-2" id="left">
+                    <h4>Earthquake Sequences</h4>
+
+                    <!-- item list (built by index.js with the views and earthquake sequences) -->
+                    <div id="earthquake-view-list"></div>
+
+                    <!-- /item list -->
+                    <p>
+                        <a href="https://github.com/Ryshackleton/seismic_energy_viz" target="_ext">Source Code</a>
+                    </p>
+
+                    <hr>
+
+                    <p>
+                        <a href="https://github.com/Ryshackleton/" target="_ext" class="center-block btn btn-primary">Author Profile</a>
+                    </p>
+
+                    <hr>
+                </div>
+                <div class="col-xs-4"><!--map-canvas will be postioned here--></div>
+                <div class="col-xs-4"></div>
+            </div>
+        </div>
 
 
-<!-- div to contain the leaflet map -->
-<div id="map-canvas"><div id="leaflet-map"></div></div>
-<!-- div to contain the force layout -->
-<div id="force-canvas"></div>
+        <!-- end template -->
 
-<!-- sidebar -->
-<div class="container-fluid" id="main">
-  <div class="row">
-  	<div class="col-xs-2" id="left">
-      <h4>Earthquake Sequences</h4>
-      <div class="hidden-xs">
-          <h6>Click the links below to explore past and present earthquakes.</h6>
-      </div>
+        <!-- script references -->
+        <!-- UI - bootstrap and jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
 
-      <!-- item list (built by index.js with the views and earthquake sequences) -->
-      <div id="earthquake-view-list"></div>
+        <!-- D3.js version 4, and topojson for earthquake parsing/rendering -->
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+        <script src="https://d3js.org/topojson.v1.min.js"></script>
 
-      <!-- /item list -->
-      <p>
-      <a href="https://github.com/Ryshackleton/seismic_energy_viz" target="_ext">Source Code</a>
-      </p>
+        <!-- leaflet js script to build the slippy map -->
+        <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
 
-      <hr> 
+        <!-- main scripts to load this page and build the map and earthquake views -->
+        <script src="dist/js/index.js"></script>
+        <script src="dist/data/quakeViewList.js"></script>
+        <script src="dist/js/LeafletBasemap.js"></script>
+        <script src="dist/js/BasemapWithEarthquakes.js"></script>
+        <script src="dist/js/usgsQuery.js"></script>
 
-      <p>
-      <a href="https://github.com/Ryshackleton/" target="_ext" class="center-block btn btn-primary">Author Profile</a>
-      </p>
+        <!--force layout to show seismic energy release -->
+        <script src="dist/js/EarthquakeForceLayout.js"></script>
 
-      <hr>
-    </div>
-    <div class="col-xs-4"><!--map-canvas will be postioned here--></div>
-    <div class="col-xs-4"></div>
-    
-    
-  </div>
-</div>
-      
-<!-- end template -->
+        <!--bootstrap scripts and plugings -->
+        <script src="lib/js/bootstrap.min.js"></script>
+        <script src="lib/js/bootstrap-slider.js"></script>
+        <script src="lib/js/bootstrap-tour.min.js"></script>
 
-	<!-- script references -->
-    <!-- UI - bootstrap and jQuery -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
-	<script src="js/bootstrap.min.js"></script>
-      
-    <!-- D3.js version 4, and topojson for earthquake parsing/rendering -->
-    <script src="https://d3js.org/d3.v4.min.js"></script> 
-    <script src="https://d3js.org/topojson.v1.min.js"></script>
-    
-      <!-- leaflet js script to build the slippy map -->
-    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
-
-    <!-- main script to load this page and build the map and earthquake views -->
-    <script src="js/index.js"></script>
-    <script src="js/leaflet_custom.js"></script>
-    <script src="js/leaflet_d3EarthquakeMap.js"></script>
-    <script src="js/usgsQuery.js"></script>
-    <script src="js/quakeViewList.js"></script>
-    <script src="js/force.js"></script>
-      
-      
-
-	</body>
+    </body>
 </html>

@@ -11,8 +11,13 @@ QUERY.usgs = (function(QUERY) {
                         -error string if numSeconds is less than 1
            leafletmap: the leaflet map to query for bounds info */
   QUERY.earthquakeURLMapBoundsJSON = function( params ) { 
-    if( params.days < 1 )
-      throw new TypeError({ fileName: "usgsQuery.js", message: "earthquakeURLMapBounds(params) - params.days must be greater than 1" });
+    if( params.days < 0 )
+    {
+        throw new TypeError({
+            fileName: "usgsQuery.js",
+            message: "earthquakeURLMapBounds(params) - params.days must be greater than 0"
+        });
+    }
     
     // undefined date signifies "now" as endtime
     var endtime = (params.date === undefined)
@@ -51,8 +56,11 @@ QUERY.usgs = (function(QUERY) {
     query.push("minlongitude=" + minLong ); 
     query.push("maxlongitude=" + maxLong ); 
     query.push("eventtype=" + params.eventType);
+    
     if( params.minmagnitude !== undefined )
         query.push("minmagnitude="+params.minmagnitude);
+    if( params.maxmagnitude !== undefined )
+        query.push("maxmagnitude="+params.maxmagnitude);
     
     query.push("orderby=time-asc"); // order in time ascending
     

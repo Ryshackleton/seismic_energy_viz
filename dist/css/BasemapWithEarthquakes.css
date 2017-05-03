@@ -1,0 +1,78 @@
+.earthquake {
+  stroke: #333;
+  opacity: 0.9;
+  stroke-width: 1;
+}
+
+.legend-mag-text {
+  font-size: 9px;
+  fill: black;
+  font-weight: bold;
+}
+
+.legend-box {
+  stroke-width: 2px;
+  stroke: rgb(154, 151, 151);;
+  stroke-opacity: 0.7;
+  fill: white;
+  rx: 5;
+  ry: 5;
+}
+
+div.magnitude-legend-selector {
+  position:relative;
+  pointer-events: none;
+}
+
+svg {
+  /*position: relative;*/
+  /* un-comment the border option below to see the borders of the svg overlays */
+  /*border: 1px dotted black;*/
+}
+
+div.magnitude-legend-selector > svg {
+  pointer-events: none;
+  overflow:hidden;
+  z-index: 1;
+}
+
+div.magnitude-legend-selector > .slider {
+  width: 88%;
+  height: 50%;
+  pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+  pointer-events: auto;
+  position: absolute;
+  left: 5%;
+  top: 25%;
+  z-index: 1;
+}
+
+.slider-handle.custom::before {
+  visibility: hidden;
+  /*line-height: 27px;*/
+  /*font-size: 27px;*/
+  /*content: "\25EF"; !*unicode cirlce character*!*/
+}
+
+.slider-track {
+  visibility: hidden;
+}
+
+/* tooltip style grabbed from leaflet.css:  .leaflet-tooltip style for consistency */
+div.tooltip {
+  position: absolute;
+  text-align: center;
+  padding: 6px;
+  background-color: #fff;
+  border: 1px solid #fff;
+  border-radius: 3px;
+  color: #222;
+  white-space: nowrap;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  pointer-events: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
