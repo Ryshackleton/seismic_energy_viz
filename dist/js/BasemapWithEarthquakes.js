@@ -479,7 +479,7 @@ function BasemapWithEarthquakes(options)
                     + (d.y-lNodeSize*0.55) + ")"; });
     
         var globalMinMag = self.eqDomain[0];
-        var globalMaxMag = 9;
+        var globalMaxMag = 10;
         var minMag = self.qparams.minmagnitude === undefined ? 1 : self.qparams.minmagnitude;
         var maxMag = self.qparams.maxmagnitude === undefined ? 10 : self.qparams.maxmagnitude;
         
@@ -518,7 +518,7 @@ function BasemapWithEarthquakes(options)
         if( d !== undefined )
         {
             self.qparams.minmagnitude = d[0];
-            self.qparams.maxmagnitude = d[1];
+            self.qparams.maxmagnitude = d[1] === 9 ? 10 : d[1]; // handle the special case of M9 selected
             // set off the map update
             self.basemap.setEarthquakeQuery(self.qparams, false, false);
         }
