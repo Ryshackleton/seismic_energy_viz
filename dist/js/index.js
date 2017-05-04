@@ -37,7 +37,8 @@ function linkEqMapToForce()
     // before adding earthquakes, send a list of earthquakes so bubble can update scales, etc
     eqMap.onStartRenderCallback(bubble.onStartRender)
         // on adding a bubble to map, add one to the bubble layout
-        .onAddEarthquakeCallback(bubble.addEarthquakeBubble);
+        .onAddEarthquakeCallback(bubble.addEarthquakeBubble)
+        .onLegendChangedCallback(bubble.clearNodes());
 }
 
 function setDefaultAnimationSpeed()

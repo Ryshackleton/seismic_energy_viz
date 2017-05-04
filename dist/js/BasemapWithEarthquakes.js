@@ -63,6 +63,17 @@ function BasemapWithEarthquakes(options)
         return self.basemap;
     };
     
+    self.basemap.onLegendChangedCallback = function(d)
+    {
+        if( !arguments.length ) {
+            return self.legendChangedCallback;
+        }
+        
+        self.legendChangedCallback = d;
+        
+        return self.basemap;
+    };
+    
     self.basemap.earthquakeColorScale = function(d)
     {
         if( !arguments.length ) {
@@ -319,7 +330,7 @@ function BasemapWithEarthquakes(options)
     
         // size scale for earthquakes
         self.eqSizeScale = d3.scaleLinear()
-            .domain([-1,10])
+            .domain([-1,9.5])
             .range([0, self.maxEarthquakeRadius]);
     
         renderMagnitudeLegend();
@@ -479,9 +490,9 @@ function BasemapWithEarthquakes(options)
                     + (d.y-lNodeSize*0.55) + ")"; });
     
         var globalMinMag = self.eqDomain[0];
-        var globalMaxMag = 10;
-        var minMag = self.qparams.minmagnitude === undefined ? 1 : self.qparams.minmagnitude;
-        var maxMag = self.qparams.maxmagnitude === undefined ? 10 : self.qparams.maxmagnitude;
+        var globalMaxMag = 9;
+        var minSliderMag = self.qparams.minmagnitude === undefined ? 1 : self.qparams.minmagnitude;
+        var maxSliderMag = self.qparams.maxmagnitude === undefined ? 9 : self.qparams.maxmagnitude;
         
         // build a boostrap-slider to pick the earthquake magnitude range
         container.selectAll("#ex2").remove();
@@ -489,7 +500,7 @@ function BasemapWithEarthquakes(options)
             .attr("id","ex2");
     
         var sliderOptions = {
-            value: [minMag,maxMag],
+            value: [minSliderMag,maxSliderMag],
             step: 1,
             min: globalMinMag,
             max: globalMaxMag,
@@ -515,17 +526,21 @@ function BasemapWithEarthquakes(options)
     //    min/max magnitudes are being set, or are updating the slider to reflect change to the self. values)
     function updateLegend(d)
     {
+        if( self.legendChangedCallback !== undefined ) {
+            self.legendChangedCallback();
+        }
+            
         if( d !== undefined )
         {
             self.qparams.minmagnitude = d[0];
-            self.qparams.maxmagnitude = d[1] === 9 ? 10 : d[1]; // handle the special case of M9 selected
+            self.qparams.maxmagnitude = d[1] === 9 ? 10 : d[1];
             // set off the map update
             self.basemap.setEarthquakeQuery(self.qparams, false, false);
         }
         
         if(self.magSlider !== undefined)
         {
-            var maxMag = self.qparams.maxmagnitude === undefined ? 10 : self.qparams.maxmagnitude;
+            var maxMag = self.qparams.maxmagnitude === undefined || self.qparams.maxmagnitude > 9 ? 9 : self.qparams.maxmagnitude;
             var minMag = self.qparams.minmagnitude === undefined ? 1 : self.qparams.minmagnitude;
             self.magSlider.setValue([minMag, maxMag]);
         }
