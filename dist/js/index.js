@@ -113,6 +113,16 @@ function startTour()
             }
             ,
             {
+                element: "body",
+                title: "What will I learn from this visualization?",
+                content: "1) How the energy release varies widely for earthquakes of different magnitudes</br>\
+                          2) At what depth most earthquakes occur</br>\
+                          3) The location of recent earthquake swarms on earth",
+                
+                placement: 'top'
+            }
+            ,
+            {
                 element: "#leaflet-map",
                 title: "Earthquake Map",
                 content: "Earthquake locations are sequentially added to the map in time sequence. The time sequence will restart as you pan and zoom.",
@@ -125,7 +135,7 @@ function startTour()
             {
                 element: "div.magnitude-legend-selector",
                 title: "Magnitude Range Selector",
-                content: "Select a magnitude to change the range of earthquakes displayed in the view. Click on the M3 circle to see more earthquakes in the view.",
+                content: "Select a magnitude to change the range of earthquakes displayed in the view. Try selecting the M4 circle to include more earthquakes in the view.",
                 placement: 'bottom',
             }
             ,
@@ -141,7 +151,7 @@ function startTour()
                 // element: "#leaflet-map",
                 element: "#mapped-quakes",
                 title: "Seismic Energy Visualization",
-                content: "As each earthquake is added to the map, a new circle is added, then scaled to represent the Seismic Energy Release of that earthquake.",
+                content: "As each earthquake is added to the map, a new circle is added, then scaled to represent the Seismic Energy Release of that earthquake:</br>Bigger earthquake = more seismic energy = bigger circle.",
                 placement: 'top',
                 onNext: startSlowSimulation
             }
@@ -149,7 +159,7 @@ function startTour()
             {
                 element: "#leaflet-map",
                 title: "Showing Seismic Energy Release",
-                content: "Seismic energy circles \"fall\" to the graph below as they are added.",
+                content: "Seismic energy circles \"fall\" to the graph below as they are added. Earthquake swarms will appear as many earthquakes falling from one location in rapid succession.",
                 placement: 'left',
                 onNext: triggerOneSlowEarthquakeAdd
             }
@@ -157,7 +167,7 @@ function startTour()
             {
                 element: "#map-canvas",
                 title: "Relative Seismic Energy Release",
-                content: "As new earthquakes are added, the scale of ALL seismic energy release earthquakes is updated. The magnitude scale is logarithmic, so a 1 unit increase in magnitude increases seismic energy release by ~32 times. Notice how much larger a M6.2 earthquake is than a M5 earthquake.",
+                content: "As new earthquakes are added, the scale of ALL seismic energy release earthquakes is updated. This causes all smaller magnitude earthquakes to shrink in size.</br></br>The magnitude scale is logarithmic, so a 1 unit increase in magnitude increases seismic energy release by ~32 times. For example, notice how much larger a M6.2 earthquake is than a M5 earthquake.",
                 placement: 'top',
             }
             ,
@@ -171,21 +181,21 @@ function startTour()
             {
                 element: ".depth-scale",
                 title: "Depth Scale",
-                content: "Earthquakes are loosely sorted vertically by depth, but \"repel\" each other to show the magnitudes where possible.",
+                content: "Earthquakes are loosely sorted vertically by depth. Pay attention to where most earthquakes fall on the depth scale.",
                 placement: 'right',
             }
             ,
             {
                 element: "#force-canvas > svg > g:last-of-type", // this madness selects the last g type, which will be a bubble in the force layout
                 title: "Get Earthquake Information",
-                content: "Hover over each seismic energy bubble to show the original location and other information regarding the earthquake. Click on the earthquake to open the USGS page for that earthquake in a new tab or window.",
+                content: "Hover over each seismic energy bubble to show the original location of the earthquake. Click on the earthquake to open the USGS page for that earthquake in a new tab or window.",
                 placement: 'top',
             }
             ,
             {
                 element: "#west-coast-now",
                 title: "Choose a sequence to view",
-                content: "Select each of the earthquake sequences to see more earthquakes!",
+                content: "Select each of the earthquake sequences to see other time periods and notable historical earthquakes!",
                 placement: 'right',
             }
         ]});
