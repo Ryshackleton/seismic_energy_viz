@@ -107,25 +107,18 @@ function startTour()
         steps: [
             {
                 element: "body",
-                title: "Take a quick tour of the graphical elements of this page",
-                content: "Use the left and right arrow keys to proceed.",
-                placement: 'top'
-            }
-            ,
-            {
-                element: "body",
-                title: "What will I learn from this visualization?",
-                content: "1) How the energy release varies widely for earthquakes of different magnitudes</br>\
-                          2) At what depth most earthquakes occur</br>\
-                          3) The location of recent earthquake swarms on earth",
-                
+                title: "What can I explore in this visualization?",
+                content: "1) The location and rates of recent earthquake activity on earth</br>\
+                          2) How seismic energy release varies for earthquakes of different magnitudes</br>\
+                          3) The range of depths that earthquakes occur</br></br>\
+                          Use the left and right arrow keys to proceed.",
                 placement: 'top'
             }
             ,
             {
                 element: "#leaflet-map",
                 title: "Earthquake Map",
-                content: "Earthquake locations are sequentially added to the map in time sequence. The time sequence will restart as you pan and zoom.",
+                content: "Earthquake locations appear on the map in time sequence. The sequence will restart as you pan and zoom.",
                 placement: 'left',
                 backdrop: true,
                 backdropContainer: "#map-canvas",
@@ -135,14 +128,14 @@ function startTour()
             {
                 element: "div.magnitude-legend-selector",
                 title: "Magnitude Range Selector",
-                content: "Select a magnitude to change the range of earthquakes displayed in the view. Try selecting the M4 circle to include more earthquakes in the view.",
+                content: "This scale <strong>only applies to stationary earthquakes in the map</strong>. Select a magnitude to change the range of earthquakes displayed in the view. Try selecting the M4 circle to include more earthquakes in the view.",
                 placement: 'bottom',
             }
             ,
             {
                 element: "#earthquake-a",
                 title: "Get Earthquake Information",
-                content: "Hover over earthquakes to display further information. Click on the earthquake to open the USGS page for that earthquake in a new tab or window.",
+                content: "Hover over the earthquake to display further information. Click on the earthquake location to open the USGS page for that earthquake.",
                 placement: 'left',
                 onNext: triggerLockedSimulation
             }
@@ -151,7 +144,7 @@ function startTour()
                 // element: "#leaflet-map",
                 element: "#mapped-quakes",
                 title: "Seismic Energy Visualization",
-                content: "As each earthquake is added to the map, a new circle is added, then scaled to represent the Seismic Energy Release of that earthquake:</br>Bigger earthquake = more seismic energy = bigger circle.",
+                content: "As each earthquake is added to the map, a corresponding \"bubble\" is added to the view. The bubbles are <strong>scaled to represent the relative seismic energy release of each earthquake</strong>, and labeled by Magnitude:</br>Bigger earthquake = bigger bubble = more seismic energy.",
                 placement: 'top',
                 onNext: startSlowSimulation
             }
@@ -159,7 +152,7 @@ function startTour()
             {
                 element: "#leaflet-map",
                 title: "Showing Seismic Energy Release",
-                content: "Seismic energy circles \"fall\" to the graph below as they are added. Earthquake swarms will appear as many earthquakes falling from one location in rapid succession.",
+                content: "Seismic energy bubbles \"fall\" to the graph below as they are added. Earthquake \"swarms\" will appear as many earthquake bubbles falling from one location in rapid succession.",
                 placement: 'left',
                 onNext: triggerOneSlowEarthquakeAdd
             }
@@ -167,29 +160,29 @@ function startTour()
             {
                 element: "#map-canvas",
                 title: "Relative Seismic Energy Release",
-                content: "As new earthquakes are added, the scale of ALL seismic energy release earthquakes is updated. This causes all smaller magnitude earthquakes to shrink in size.</br></br>The magnitude scale is logarithmic, so a 1 unit increase in magnitude increases seismic energy release by ~32 times. For example, notice how much larger a M6.2 earthquake is than a M5 earthquake.",
+                content: "As new earthquake bubbles are added, the scale of ALL bubbles are updated, causing smaller magnitude earthquake bubbles to shrink in size.</br></br>The moment magnitude scale is logarithmic, so a 1 unit increase in magnitude increases seismic energy release by ~32 times. For example, notice how much larger a M6.2 earthquake is than a M5 earthquake.",
+                placement: 'top',
+            }
+            ,
+            {
+                element: "#force-canvas > svg > g:last-of-type", // this madness selects the last g type, which will be a bubble in the force layout
+                title: "Get Earthquake Information",
+                content: "Hover over each seismic energy bubble to show the original location of the earthquake. A click on the bubble will open the USGS page.",
                 placement: 'top',
             }
             ,
             {
                 element: ".time-scale",
                 title: "Time Scale",
-                content: "Earthquakes are loosely sorted horizontally by time, but \"repel\" each other to show the magnitudes where possible.",
+                content: "Earthquake bubbles are loosely sorted horizontally by time, but \"repel\" each other to display the magnitude values where possible.",
                 placement: 'top',
             }
             ,
             {
                 element: ".depth-scale",
                 title: "Depth Scale",
-                content: "Earthquakes are loosely sorted vertically by depth. Pay attention to where most earthquakes fall on the depth scale.",
+                content: "Earthquake bubbles are loosely sorted vertically by depth. Where do most earthquakes fall on the depth scale?",
                 placement: 'right',
-            }
-            ,
-            {
-                element: "#force-canvas > svg > g:last-of-type", // this madness selects the last g type, which will be a bubble in the force layout
-                title: "Get Earthquake Information",
-                content: "Hover over each seismic energy bubble to show the original location of the earthquake. Click on the earthquake to open the USGS page for that earthquake in a new tab or window.",
-                placement: 'top',
             }
             ,
             {
