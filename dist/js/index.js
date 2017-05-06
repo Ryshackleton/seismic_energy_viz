@@ -108,87 +108,62 @@ function startTour()
             {
                 element: "body",
                 title: "What can I explore in this visualization?",
-                content: "1) The location and rates of recent earthquake activity on earth</br>\
-                          2) How seismic energy release varies for earthquakes of different magnitudes</br>\
-                          3) The range of depths that earthquakes occur</br></br>\
-                          Use the left and right arrow keys to proceed.",
+                content: "<ul><li>The location and rates of recent earthquake activity on earth</li>\
+                          <li>How seismic energy release varies for earthquakes of different magnitudes</li>\
+                          <li>The range of depths that earthquakes occur</li></ul>\
+                          <small>Use the left and right arrow keys to proceed.</small>",
                 placement: 'top'
-            }
-            ,
-            {
-                element: "#leaflet-map",
-                title: "Earthquake Map",
-                content: "Earthquake locations appear on the map in time sequence. The sequence will restart as you pan and zoom.",
-                placement: 'left',
-                backdrop: true,
-                backdropContainer: "#map-canvas",
-                backdropPadding: 5
             }
             ,
             {
                 element: "div.magnitude-legend-selector",
                 title: "Magnitude Range Selector",
-                content: "This scale <strong>only applies to stationary earthquakes in the map</strong>. Select a magnitude to change the range of earthquakes displayed in the view. Try selecting the M4 circle to include more earthquakes in the view.",
+                content: "<ul><li>Selecting a magnitude circle above changes the range of earthquakes displayed in the view.</li><li>For example, try selecting the M4 circle, which causes more earthquakes to appear in the view.</li> <li>Earthquakes appear in time sequence, or in order of occurrence.</li></ul> <small>Note: This scale only applies to earthquakes in the map view.</small>",
                 placement: 'bottom',
             }
             ,
             {
-                element: "#earthquake-a",
+                element: "#earthquake-circles > a:first-of-type",
                 title: "Get Earthquake Information",
-                content: "Hover over the earthquake to display further information. Click on the earthquake location to open the USGS page for that earthquake.",
+                content: "<ul><li>Hover over the earthquake to display further information.</li><li>To open the USGS page for that earthquake, click on the earthquake circle.</li> ",
                 placement: 'left',
                 onNext: triggerLockedSimulation
             }
             ,
             {
-                // element: "#leaflet-map",
-                element: "#mapped-quakes",
+                element: "#leaflet-map",
                 title: "Seismic Energy Visualization",
-                content: "As each earthquake is added to the map, a corresponding \"bubble\" is added to the view. The bubbles are <strong>scaled to represent the relative seismic energy release of each earthquake</strong>, and labeled by Magnitude:</br>Bigger earthquake = bigger bubble = more seismic energy.",
+                content: "As each earthquake is added to the map, a corresponding \"bubble\" is added to the view. <ul><li>The bubbles are <strong>scaled to represent the relative seismic energy release of each earthquake.</strong></li><li>Labels represent <a href=\"https://youtu.be/HL3KGK5eqaw\" target=\"blank\">moment magnitude</a>.</li><li>Bigger earthquake = bigger bubble = more seismic energy.</li></ul>",
                 placement: 'top',
                 onNext: startSlowSimulation
             }
             ,
             {
-                element: "#leaflet-map",
+                element: "#force-canvas > svg > g:last-of-type", // this madness selects the last g type, which will be a bubble in the force layout
                 title: "Showing Seismic Energy Release",
-                content: "Seismic energy bubbles \"fall\" to the graph below as they are added. Earthquake \"swarms\" will appear as many earthquake bubbles falling from one location in rapid succession.",
-                placement: 'left',
+                content: "Seismic energy bubbles \"fall\" to the graph below as they are added. <ul><li>To see the original location of each earthquake, hover over the seismic energy bubble in the graph below.</li><li>Click on the bubble to open the USGS page for that earthquake.</li></ul>",
+                placement: 'right',
                 onNext: triggerOneSlowEarthquakeAdd
             }
             ,
             {
                 element: "#map-canvas",
                 title: "Relative Seismic Energy Release",
-                content: "As new earthquake bubbles are added, the scale of ALL bubbles are updated, causing smaller magnitude earthquake bubbles to shrink in size.</br></br>The moment magnitude scale is logarithmic, so a 1 unit increase in magnitude increases seismic energy release by ~32 times. For example, notice how much larger a M6.2 earthquake is than a M5 earthquake.",
-                placement: 'top',
-            }
-            ,
-            {
-                element: "#force-canvas > svg > g:last-of-type", // this madness selects the last g type, which will be a bubble in the force layout
-                title: "Get Earthquake Information",
-                content: "Hover over each seismic energy bubble to show the original location of the earthquake. A click on the bubble will open the USGS page.",
+                content: "<ul><li>As new earthquake bubbles are added, the scale of ALL bubbles are updated, causing smaller magnitude earthquake bubbles to shrink when larger ones appear.</li><li>The shrinking occurs because <strong>the relationship between moment magnitude and seismic energy is logarithmic</strong>, so a 1 unit increase in magnitude increases seismic energy release by ~32 times.</li><li>For example, notice how much larger the M6.2 earthquake bubble is than the M5 earthquake bubble.</li> ",
                 placement: 'top',
             }
             ,
             {
                 element: ".time-scale",
                 title: "Time Scale",
-                content: "Earthquake bubbles are loosely sorted horizontally by time, but \"repel\" each other to display the magnitude values where possible.",
+                content: "Earthquake bubbles in the lower space are sorted horizontally by time and vertically by depth.<br/><small>(The scale is not exact because smaller bubbles are pushed aside by larger bubbles to ensure that the magnitude labels are visible where possible.)</small>",
                 placement: 'top',
-            }
-            ,
-            {
-                element: ".depth-scale",
-                title: "Depth Scale",
-                content: "Earthquake bubbles are loosely sorted vertically by depth. Where do most earthquakes fall on the depth scale?",
-                placement: 'right',
             }
             ,
             {
                 element: "#west-coast-now",
                 title: "Choose a sequence to view",
-                content: "Select each of the earthquake sequences to see other time periods and notable historical earthquakes!",
+                content: "Select each of the earthquake sequences to see other time periods and notable historical earthquakes. As you explore, pay attention to the following:<ul><li>Earthquakes are generally found along the plate boundaries (red lines on the map)</li><li>\"Swarms\" of earthquakes will appear as many earthquake bubbles falling from one location in rapid succession.</li><li>Most earthquakes fall within a specific range on the depth scale, especially for the \"Big Earthquakes in the last 100 years\" sequence.</li>",
                 placement: 'right',
             }
         ]});
