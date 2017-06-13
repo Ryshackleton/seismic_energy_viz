@@ -208,15 +208,12 @@ function LeafletBasemap ( options ) {
         // create the geocoding control and add it to the map
         var searchControl = L.esri.Geocoding.geosearch().addTo(self.leafletmap);
 
-        // listen for the results event and add every result to the map
+        // listen for the results event and fly to selected location
         searchControl.on("results", function(data) {
-            if( data.results.length )
-            {
-                flyToView(data.results[0].latlng,5);
+            if( data.results.length ) {
+                self.options.mapCenter = data.results[0].latlng;
             }
-            else {
-                flyToView(self.options.mapCenter,self.options.mapZoomLevel);
-            }
+            flyToView(self.options.mapCenter,self.options.mapZoomLevel);
             map();
         });
     }
