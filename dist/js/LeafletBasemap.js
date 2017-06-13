@@ -184,6 +184,9 @@ function LeafletBasemap ( options ) {
         // create an empty layer control that we'll add components to
         self.layerControl = L.control.layers({},{}).addTo(self.leafletmap);
         
+        // create geocode control
+        addGeocodeControl();
+        
         if( options.renderCallBack !== undefined ) {
             self.renderCallback = options.renderCallBack;
         }
@@ -197,6 +200,25 @@ function LeafletBasemap ( options ) {
                 }
             }
         );
+    }
+    
+    // uses esri leaflet to add a geocoding search box
+    function addGeocodeControl()
+    {
+        // create the geocoding control and add it to the map
+        var searchControl = L.esri.Geocoding.geosearch().addTo(self.leafletmap);
+
+        // listen for the results event and add every result to the map
+        searchControl.on("results", function(data) {
+            if( data.results.length )
+            {
+                flyToView(data.results[0].latlng,5);
+            }
+            else {
+                flyToView(self.options.mapCenter,self.options.mapZoomLevel);
+            }
+            map();
+        });
     }
     
     // return a reference to the map
